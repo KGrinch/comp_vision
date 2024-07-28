@@ -8,7 +8,7 @@ ranges = {
     'min_h1': {'current': 32, 'max': 180},
     'max_h1': {'current': 70, 'max': 180},
 }
-
+     
 
 def trackbar_handler(name):
     def handler(x):
