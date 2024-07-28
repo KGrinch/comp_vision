@@ -2,7 +2,8 @@ import pyautogui
 import time
 import numpy as np
 import cv2
-import imutils
+# import imutils
+# from path_finder import green_detector
 
 # Ждем три секунды, успеваем переключиться на окно:
 print('waiting for 2 seconds...')
@@ -43,12 +44,61 @@ window = (left, top, left+window_resolution[0], top+window_resolution[1])
 
 cv2.namedWindow('result')
 
+ranges = {
+    'min_h1': {'current': 59, 'max': 180},
+    'max_h1': {'current': 67, 'max': 180},
+    'min_s': {'current': 110, 'max': 180},
+    'max_s': {'current': 180, 'max': 180},
+    'min_v': {'current': 47, 'max': 180},
+    'max_v': {'current': 180, 'max': 180}
+}
+
+
+def trackbar_handler(item):
+    def handler(x):
+        global ranges
+        ranges[item]['current'] = x
+
+    return handler
+
+
+for name in ranges:
+    cv2.createTrackbar(name, 'result', ranges[name]['current'], ranges[name]['max'], trackbar_handler(name))
+
 while True:
     print((left, top, window_resolution[0], window_resolution[1]))
     pix = pyautogui.screenshot(region=(left, top, window_resolution[0], window_resolution[1]))
-    numpix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
+    num_pix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
+    num_pix = cv2.cvtColor(num_pix, cv2.COLOR_BGR2HSV)
 
-    cv2.imshow('result', numpix)
+    min_ = (ranges['min_h1']['current'], ranges['min_s']['current'], ranges['min_v']['current'])
+    max_ = (ranges['max_h1']['current'], ranges['max_s']['current'], ranges['max_v']['current'])
+
+    mask = cv2.inRange(num_pix, min_, max_)
+    result = cv2.bitwise_and(num_pix, num_pix, mask=mask)
+
+    contours = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    contours = contours[0]
+
+    if contours:
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+        cv2.drawContours(result, contours, 0, (0, 255, 0), 1)
+        cv2.drawContours(result, contours, 0, (255, 255, 255), 1)
+
+        for idx, _ in enumerate(contours):
+
+            (x, y, w, h) = cv2.boundingRect(contours[idx])
+            cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 1)
+
+            center_x = (x + w//2)
+            center_y = (y + h//2)
+            if countours[idx] != contours:
+                cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
+
+
+    cv2.imshow('result', result)
     if cv2.waitKey(1) == 27:
         break
 
