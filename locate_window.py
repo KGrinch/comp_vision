@@ -87,16 +87,15 @@ while True:
         cv2.drawContours(result, contours, 0, (0, 255, 0), 1)
         cv2.drawContours(result, contours, 0, (255, 255, 255), 1)
 
-        for idx, _ in enumerate(contours):
+        for idx, c in enumerate(contours):
 
             (x, y, w, h) = cv2.boundingRect(contours[idx])
             cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 1)
 
             center_x = (x + w//2)
             center_y = (y + h//2)
-            if countours[idx] != contours:
-                cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
 
+            cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
 
     cv2.imshow('result', result)
     if cv2.waitKey(1) == 27:
