@@ -91,6 +91,9 @@ while True:
     min_ = (ranges['min_h1']['current'], ranges['min_s']['current'], ranges['min_v']['current'])
     max_ = (ranges['max_h1']['current'], ranges['max_s']['current'], ranges['max_v']['current'])
 
+
+    a = 123
+
     mask = cv2.inRange(num_pix, min_, max_)
     result = cv2.bitwise_and(num_pix, num_pix, mask=mask)
 
