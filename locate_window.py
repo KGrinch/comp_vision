@@ -2,6 +2,8 @@ import pyautogui
 import time
 import numpy as np
 import cv2
+import keyboard_emu as kbe
+import threading
 # import imutils
 # from path_finder import green_detector
 
@@ -66,7 +68,7 @@ for name in ranges:
     cv2.createTrackbar(name, 'result', ranges[name]['current'], ranges[name]['max'], trackbar_handler(name))
 
 while True:
-    print((left, top, window_resolution[0], window_resolution[1]))
+    # print((left, top, window_resolution[0], window_resolution[1]))
     pix = pyautogui.screenshot(region=(left, top, window_resolution[0], window_resolution[1]))
     num_pix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
     num_pix = cv2.cvtColor(num_pix, cv2.COLOR_BGR2HSV)
@@ -96,6 +98,15 @@ while True:
             center_y = (y + h//2)
 
             cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
+
+            # Поворот вправо
+            if center_x > 315:
+                # print(center_x - 315)
+                kbe.key_press(kbe.SC_RIGHT, interval=0.01)
+            # Поворот влево
+            elif center_x < 315:
+                # print(center_x - 315)
+                kbe.key_press(kbe.SC_LEFT, interval=0.01)
 
     cv2.imshow('result', result)
     if cv2.waitKey(1) == 27:
