@@ -3,7 +3,7 @@ import time
 import numpy as np
 import cv2
 import keyboard_emu as kbe
-import threading
+from threading import Thread
 # import imutils
 # from path_finder import green_detector
 
@@ -38,13 +38,28 @@ if nfs_window_location is None:
 left = int(nfs_window_location[0])
 top = int(nfs_window_location[1]+nfs_window_location[3])
 
-# ВНИМАНИЕ!  У вас, скорее всего, будет другое разрешение, т.к. у меня 4К-монитор!
 # Здесь надо выставить те параметры, которые вы задали в игре.
 window_resolution = (630, 480)
 
 window = (left, top, left+window_resolution[0], top+window_resolution[1])
 
 cv2.namedWindow('result')
+
+
+def steering():
+    while True:
+        # Поворот вправо
+        if center_x > 315:
+            # print(center_x - 315)
+            kbe.key_press(kbe.SC_RIGHT, interval=0.01)
+        # Поворот влево
+        elif center_x < 315:
+            # print(center_x - 315)
+            kbe.key_press(kbe.SC_LEFT, interval=0.01)
+
+
+th = Thread(target=steering)
+th.start()
 
 ranges = {
     'min_h1': {'current': 59, 'max': 180},
@@ -98,15 +113,6 @@ while True:
             center_y = (y + h//2)
 
             cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
-
-            # Поворот вправо
-            if center_x > 315:
-                # print(center_x - 315)
-                kbe.key_press(kbe.SC_RIGHT, interval=0.01)
-            # Поворот влево
-            elif center_x < 315:
-                # print(center_x - 315)
-                kbe.key_press(kbe.SC_LEFT, interval=0.01)
 
     cv2.imshow('result', result)
     if cv2.waitKey(1) == 27:
