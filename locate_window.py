@@ -3,6 +3,7 @@ import time
 import numpy as np
 import cv2
 import keyboard_emu as kbe
+from threads_kbe import func
 from threading import Thread
 # import imutils
 # from path_finder import green_detector
@@ -45,28 +46,23 @@ window = (left, top, left+window_resolution[0], top+window_resolution[1])
 
 cv2.namedWindow('result')
 
-
-def steering():
-    while True:
-        # Поворот вправо
-        if center_x > 315:
-            # print(center_x - 315)
-            kbe.key_press(kbe.SC_RIGHT, interval=0.01)
-        # Поворот влево
-        elif center_x < 315:
-            # print(center_x - 315)
-            kbe.key_press(kbe.SC_LEFT, interval=0.01)
+loc = None
 
 
-th = Thread(target=steering)
+def my_loc():
+    global loc
+    return loc
+
+
+th = Thread(target=func, args=(my_loc,))
 th.start()
 
 ranges = {
-    'min_h1': {'current': 59, 'max': 180},
-    'max_h1': {'current': 67, 'max': 180},
+    'min_h': {'current ': 59, 'max': 180},
+    'max_h': {'current ': 67, 'max': 180},
     'min_s': {'current': 110, 'max': 180},
     'max_s': {'current': 180, 'max': 180},
-    'min_v': {'current': 47, 'max': 180},
+    'min_v': {'current ': 47, 'max': 180},
     'max_v': {'current': 180, 'max': 180}
 }
 
@@ -87,12 +83,10 @@ while True:
     pix = pyautogui.screenshot(region=(left, top, window_resolution[0], window_resolution[1]))
     num_pix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
     num_pix = cv2.cvtColor(num_pix, cv2.COLOR_BGR2HSV)
+    num_pix = num_pix[window_resolution[1]//2:, :, :]
 
-    min_ = (ranges['min_h1']['current'], ranges['min_s']['current'], ranges['min_v']['current'])
-    max_ = (ranges['max_h1']['current'], ranges['max_s']['current'], ranges['max_v']['current'])
-
-
-    a = 123
+    min_ = (ranges['min_h']['current'], ranges['min_s']['current'], ranges['min_v']['current'])
+    max_ = (ranges['max_h']['current'], ranges['max_s']['current'], ranges['max_v']['current'])
 
     mask = cv2.inRange(num_pix, min_, max_)
     result = cv2.bitwise_and(num_pix, num_pix, mask=mask)
@@ -104,7 +98,7 @@ while True:
     if contours:
         contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
-        cv2.drawContours(result, contours, 0, (0, 255, 0), 1)
+        cv2.drawContours(result, contours, 0, (255, 0, 0), 1)
         cv2.drawContours(result, contours, 0, (255, 255, 255), 1)
 
         for idx, c in enumerate(contours):
@@ -116,6 +110,10 @@ while True:
             center_y = (y + h//2)
 
             cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
+
+            loc = center_x - (window_resolution[1] // 2)
+
+            # func(loc)
 
     cv2.imshow('result', result)
     if cv2.waitKey(1) == 27:
