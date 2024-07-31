@@ -3,7 +3,7 @@ import time
 import numpy as np
 import cv2
 import keyboard_emu as kbe
-from threads_kbe import func
+from threads_kbe import steer
 from threading import Thread
 # import imutils
 # from path_finder import green_detector
@@ -32,6 +32,7 @@ if nfs_window_location is None:
     print('NFS Window not found')
     exit(1)
 
+
 # Извлекаем из картинки-скриншота только данные окна NFS.
 # Наша target-картинка - это заголовочная полоска окна.
 # Для получения скриншота, мы берем ее левую точку (0),
@@ -54,15 +55,15 @@ def my_loc():
     return loc
 
 
-th = Thread(target=func, args=(my_loc,))
+th = Thread(target=steer, args=(my_loc,))
 th.start()
 
 ranges = {
-    'min_h': {'current ': 59, 'max': 180},
-    'max_h': {'current ': 67, 'max': 180},
+    'min_h': {'current': 59, 'max': 180},
+    'max_h': {'current': 67, 'max': 180},
     'min_s': {'current': 110, 'max': 180},
     'max_s': {'current': 180, 'max': 180},
-    'min_v': {'current ': 47, 'max': 180},
+    'min_v': {'current': 47, 'max': 180},
     'max_v': {'current': 180, 'max': 180}
 }
 
@@ -109,7 +110,7 @@ while True:
             center_x = (x + w//2)
             center_y = (y + h//2)
 
-            cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
+            # cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
 
             loc = center_x - (window_resolution[1] // 2)
 
