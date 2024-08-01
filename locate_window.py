@@ -110,7 +110,7 @@ while True:
             center_x = (x + w//2)
             center_y = (y + h//2)
 
-            # cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
+            cv2.line(result, (315, 480), (center_x, center_y), (255, 255, 255), 1)
 
             loc = center_x - (window_resolution[1] // 2)
 
