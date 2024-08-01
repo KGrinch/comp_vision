@@ -17,24 +17,32 @@ def steer(status: callable = None):
 
         if position is None:
             continue
-        cnt = 0
-        old_pos = None
+        # cnt = 0
+        # old_pos = None
         if True:
-            if position == old_pos:
-                cnt += 1
-            if position > 0:
-                kbe.key_press(kbe.SC_RIGHT, interval=0.1)
-                position = 0
+            # if position == old_pos:
+            #    cnt += 1
+            if position >= 50:
+                kbe.key_down(kbe.SC_RIGHT)
+                sleep(0.5)
+                kbe.key_up(kbe.SC_RIGHT)
+            elif 50 > position > 0:
+                kbe.key_press(kbe.SC_RIGHT, interval=0.01)
+                # position = 0
                 # print('r')
-                if cnt == 10:
-                    ret_track('r')
-            if position < 0:
-                kbe.key_press(kbe.SC_LEFT, interval=0.1)
-                position = 0
+            #    if cnt == 10:
+            #        ret_track('r')
+            elif position <= -50:
+                kbe.key_down(kbe.SC_LEFT)
+                sleep(0.5)
+                kbe.key_up(kbe.SC_LEFT)
+            if -50 < position < 0:
+                kbe.key_press(kbe.SC_LEFT, interval=0.01)
+                # position = 0
                 # print('l')
-                if cnt == 10:
-                    ret_track('l')
-            old_pos = position
+            #    if cnt == 10:
+            #        ret_track('l')
+            # old_pos = position
 
 
 if __name__ == '__main__':
